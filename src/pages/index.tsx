@@ -1,11 +1,35 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import styles from "@/styles/Home.module.css";
+import { getAddress, getInscriptions } from "test-nosft-core2";
+import { Inscription } from "test-nosft-core2/dist/types";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+export async function getServerSideProps() {
+  const nostrPublicKey =
+    "d5e19bcba9c3442bae90beea0dee2e5760177ee7ac5d4196118e657bbb302141";
+  const { address } = getAddress(nostrPublicKey);
+  console.log({ address });
+
+  const { inscriptions } = await getInscriptions({
+    address: address || "",
+    offset: 0,
+    limit: 2,
+  });
+
+  return { props: { address, inscriptions } };
+}
+
+export default function Home({
+  address,
+  inscriptions,
+}: {
+  address: string;
+  inscriptions: Inscription[];
+}) {
+  console.log({ address, inscriptions });
   return (
     <>
       <Head>
@@ -26,7 +50,7 @@ export default function Home() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              By{' '}
+              By{" "}
               <Image
                 src="/vercel.svg"
                 alt="Vercel Logo"
@@ -119,5 +143,5 @@ export default function Home() {
         </div>
       </main>
     </>
-  )
+  );
 }
